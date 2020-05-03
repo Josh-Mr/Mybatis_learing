@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.josh.dao.IUserDAO">
+
+    <resultMap id="userRefAccountMap" type="user" >
+        <id property="id" column="id"></id>
+        <result property="username" column="username"></result>
+        <result property="birthday" column="birthday"></result>
+        <result property="sex" column="sex"></result>
+        <result property="address" column="address"></result>
+        <collection property="accounts" ofType="account">
+            <id property="id" column="account_id"></id>
+            <result property="uid" column="account_uid"></result>
+            <result property="money" column="account_money"></result>
+        </collection>
+    </resultMap>
+
+    <!--查询user以及用户下所绑定的账户-->
+    <select id="findAll" resultMap="userRefAccountMap" >
+        select user.*,account.id account_id,
+        account.uid account_uid,account.money
+        account_money from user ;
+        left join account on user.id = account.uid
+    </select>
+</mapper>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.josh.dao.IUserDao">
+
+    <resultMap id="userMap" type="user">
+        <id property="id" column="id"></id>
+        <result property="username" column="username"></result>
+        <result property="birthday" column="birthday"></result><!--javaType="java.util.Date" jdbcType="DATE"-->
+        <result property="sex" column="sex"></result>
+        <result property="address" column="address"></result>
+    </resultMap>
+
+
+    <!-- resultType = "com.josh.entity.User" -->
+    <select id="findAll" resultMap="userMap" >
+        select * from user ;
+    </select>
+
+    <!--
+    resultType="hashMap" // 返回HashMap封装数据
+    -->
+    <select id="findById" parameterType="INT" resultType="HashMap">
+        select * from user where id = #{id}
+    </select>
+
+    <select id="findByUsername" parameterType="String" resultType="HashMap">
+        select * from user where username like #{username}
+    </select>
+
+    <!--插入操作
+        useGeneratedKeys = "true" keyProperty = "id" keyColumn="id" 增加主键返回
+    -->
+    <insert id="insertUser" parameterType="user"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into user(username,birthday,sex,address)
+        values(#{username},#{birthday},#{sex},#{address})
+    </insert>
+
+    <!--动态更新-->
+    <update id="updateUserById" parameterType="user" >
+        update user
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="address != null">address = #{address},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--动态查询语句-->
+
+    <!--
+     <where>
+    <if test="id != null">
+        and id = #{id}
+    </if>
+    <if test="username != null">
+        and username = #{username}
+    </if>
+    <if test="birthday != null">
+        and birthday = #{birthday}
+    </if>
+    <if test="sex != null">
+        and sex = #{sex}
+    </if>
+    <if test="address != null">
+        and address = #{address}
+    </if>
+    </where>
+    -->
+    <!--选择查询-->
+    <select id="findBycondition" parameterType="user" resultMap="userMap" >
+        select  * from user
+        <where>
+            <choose>
+                <when test="id != null">
+                    and id = #{id}
+                </when>
+                <when test="sex != null">
+                    and sex = #{sex}
+                </when>
+                <when test="address != null">
+                    and address = #{address}
+                </when>
+                <otherwise>
+                   and  1 = 1
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+    <!--集合的遍历-->
+    <!--
+        提示 你可以将任何可迭代对象（如 List、Set 等）、
+        Map 对象或者数组对象作为集合参数传递给 foreach。
+        当使用可迭代对象或者数组时，index 是当前迭代的序号，item 的值是本次迭代获取到的元素。
+        当使用 Map 对象（或者 Map.Entry 对象的集合）时，index 是键，item 是值。-->
+    <select id="findByConditionVo" resultMap="userMap" parameterType="ConditionVo" >
+        select * from user
+        <where>
+            <if test="arrayList != null  and arrayList.size() > 0">
+                <foreach collection="arrayList" open="and id  in (" close=")"
+                         separator="," item="item" index="index" >
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="" type="" autoMapping="" extends="">
+
+        <collection property=""></collection>
+        <result></result>
+        <id></id>
+        <association property=""></association>
+        <constructor>
+            <idArg ></idArg>
+            <arg></arg>
+        </constructor>
+        <discriminator javaType="">
+            <case value="">
+            </case>
+        </discriminator>
+    </resultMap>
+</mapper>
